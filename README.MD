@@ -2,6 +2,9 @@
 
 A free, open-source application for streaming live sports — built for educational purposes.
 
+🌐 **Live Site:** [https://sayanpal514-hue.github.io/Sportlink-Tv-App/](https://sayanpal514-hue.github.io/Sportlink-Tv-App/)
+
+---
 
 ## ✨ Features
 
@@ -109,6 +112,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](./LICEN
 
 **sayanpal514-hue**
 - GitHub: [@sayanpal514-hue](https://github.com/sayanpal514-hue)
+- 🌐 Site: [sayanpal514-hue.github.io/Sportlink-Tv-App](https://sayanpal514-hue.github.io/Sportlink-Tv-App/)
 
 ---
 
