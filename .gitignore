@@ -1,0 +1,38 @@
+# Gradle
+.gradle/
+build/
+
+# Local configuration
+local.properties
+
+# Android files
+*.apk
+*.aab
+*.ap_
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.tar
+*.tgz
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (auto-generated files)
+google-services.json
+
+# Android Studio
+.idea/
+*.iml
+.gradle/
+.navigation/
+.capacitor/
+
+# Build output
+app/build/
+app/release/
+
+# File-based emulators
+.emulator*
