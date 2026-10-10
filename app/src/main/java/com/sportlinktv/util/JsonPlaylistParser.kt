@@ -76,4 +76,89 @@ object JsonPlaylistParser {
         }
         return channels
     }
+    
+    fun parseLiveSportEvent(content: String, defaultGroup: String = "Live Sports"): List<Channel> {
+        val channels = mutableListOf<Channel>()
+        try {
+            val arr = JSONArray(content)
+            for (i in 0 until arr.length()) {
+                val eventObj = arr.getJSONObject(i)
+                val eventName = eventObj.optString("title", "Unknown")
+                val eventLogo = eventObj.optString("image", "")
+                val eventCat = eventObj.optString("cat", defaultGroup)
+                
+                val streamsArr = eventObj.optJSONArray("resolved_streams") ?: continue
+                for (j in 0 until streamsArr.length()) {
+                    val streamObj = streamsArr.getJSONObject(j)
+                    val title = streamObj.optString("title", eventName)
+                    var link = streamObj.optString("link", "")
+                    val api = streamObj.optString("api", "")
+                    
+                    if (link.isBlank()) continue
+                    
+                    var userAgent: String? = null
+                    var cookie: String? = null
+                    var referer: String? = null
+                    var origin: String? = null
+                    
+                    if (link.contains("|")) {
+                        val parts = link.split("|", limit = 2)
+                        link = parts[0]
+                        val headers = parts[1].split("&")
+                        for (header in headers) {
+                            val kv = header.split("=", limit = 2)
+                            if (kv.size == 2) {
+                                val key = kv[0].trim().lowercase()
+                                val value = kv[1].trim()
+                                when (key) {
+                                    "user-agent" -> userAgent = value
+                                    "cookie" -> cookie = value
+                                    "referer" -> referer = value
+                                    "origin" -> origin = value
+                                }
+                            }
+                        }
+                    }
+                    
+                    var drmKeyId: String? = null
+                    var drmKey: String? = null
+                    if (api.contains(":")) {
+                        val pairs = api.split(",")
+                        val kids = mutableListOf<String>()
+                        val keys = mutableListOf<String>()
+                        for (pair in pairs) {
+                            val keyParts = pair.split(":")
+                            if (keyParts.size >= 2) {
+                                kids.add(keyParts[0].trim())
+                                keys.add(keyParts[1].trim())
+                            }
+                        }
+                        if (kids.isNotEmpty()) {
+                            drmKeyId = kids.joinToString(",")
+                            drmKey = keys.joinToString(",")
+                        }
+                    }
+                    
+                    channels.add(
+                        Channel(
+                            name = "$eventName - $title",
+                            url = link,
+                            logo = eventLogo,
+                            group = eventCat,
+                            tvgId = "",
+                            drmKeyId = drmKeyId,
+                            drmKey = drmKey,
+                            userAgent = userAgent,
+                            cookie = cookie,
+                            referer = referer,
+                            origin = origin
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return channels
+    }
 }

@@ -27,10 +27,12 @@ class ClearKeyMediaDrmCallback(
         uuid: UUID,
         request: ExoMediaDrm.KeyRequest
     ): ByteArray {
-        val kidB64 = hexToBase64Url(keyIdHex)
-        val keyB64 = hexToBase64Url(keyHex)
-        // JWK Set response format expected by Android's ClearKey MediaDrm
-        val jwkResponse = """{"keys":[{"kty":"oct","k":"$keyB64","kid":"$kidB64"}],"type":"temporary"}"""
+        val kidB64List = keyIdHex.split(",").map { hexToBase64Url(it) }
+        val keyB64List = keyHex.split(",").map { hexToBase64Url(it) }
+        val keysJsonArray = kidB64List.zip(keyB64List).joinToString(",") { (kid, key) ->
+            """{"kty":"oct","k":"$key","kid":"$kid"}"""
+        }
+        val jwkResponse = """{"keys":[$keysJsonArray],"type":"temporary"}"""
         return jwkResponse.toByteArray(Charsets.UTF_8)
     }
 

@@ -3,7 +3,7 @@ package com.sportlinktv.data
 import androidx.annotation.DrawableRes
 import com.sportlinktv.R
 
-enum class PlaylistFormat { M3U, JSON_ZEE5, JSON_HOTSTAR }
+enum class PlaylistFormat { M3U, JSON_ZEE5, JSON_HOTSTAR, JSON_LIVE_EVENT }
 
 data class DefaultPlaylist(
     val name: String,
@@ -21,6 +21,7 @@ object DefaultPlaylists {
         DefaultPlaylist("JIO-TV", R.drawable.logo_jiotv, "https://sportlink-playlist.pages.dev/zio.m3u"),
         DefaultPlaylist("ZEE5", R.drawable.logo_zee5, "https://vk-playlist.pages.dev/zee3.m3u"),
         DefaultPlaylist("SONY", R.drawable.logo_sony, "https://vk-playlist.pages.dev/sony.m3u"),
-        DefaultPlaylist("SUN", R.drawable.logo_sun, "https://vk-playlist.pages.dev/sun.m3u")
+        DefaultPlaylist("SUN", R.drawable.logo_sun, "https://vk-playlist.pages.dev/sun.m3u"),
+        DefaultPlaylist("LIVE SPORT", R.drawable.logo_willow, "https://raw.githubusercontent.com/darkbyteprojects/iptv_png/refs/heads/main/provider_2/live_events.json", PlaylistFormat.JSON_LIVE_EVENT)
     )
 }

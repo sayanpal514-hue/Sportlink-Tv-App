@@ -23,10 +23,19 @@ object M3UParser {
                 trimmed.startsWith("#KODIPROP:inputstream.adaptive.license_key=") -> {
                     val keyVal = trimmed.substringAfter("=")
                     if (keyVal.contains(":") && !keyVal.startsWith("{")) {
-                        val parts = keyVal.split(":")
-                        if (parts.size >= 2) {
-                            current?.put("drmKeyId", parts[0].trim())
-                            current?.put("drmKey", parts[1].trim())
+                        val pairs = keyVal.split(",")
+                        val kids = mutableListOf<String>()
+                        val keys = mutableListOf<String>()
+                        for (pair in pairs) {
+                            val parts = pair.split(":")
+                            if (parts.size >= 2) {
+                                kids.add(parts[0].trim())
+                                keys.add(parts[1].trim())
+                            }
+                        }
+                        if (kids.isNotEmpty()) {
+                            current?.put("drmKeyId", kids.joinToString(","))
+                            current?.put("drmKey", keys.joinToString(","))
                         }
                     }
                 }

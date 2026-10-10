@@ -50,6 +50,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                     val channels = when (playlist.format) {
                         PlaylistFormat.JSON_ZEE5 -> JsonPlaylistParser.parseZee5(content, playlist.name)
                         PlaylistFormat.JSON_HOTSTAR -> JsonPlaylistParser.parseHotstar(content)
+                        PlaylistFormat.JSON_LIVE_EVENT -> JsonPlaylistParser.parseLiveSportEvent(content, playlist.name)
                         PlaylistFormat.M3U -> M3UParser.parse(content)
                     }
                     _uiState.value = _uiState.value.copy(
