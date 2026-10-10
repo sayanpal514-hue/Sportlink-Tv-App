@@ -70,9 +70,31 @@ object M3UParser {
                 }
                 trimmed.startsWith("http") || trimmed.startsWith("rtmp") || trimmed.startsWith("rtsp") -> {
                     current?.let { attrs ->
+                        var streamUrl = trimmed
+                        // Handle pipe-separated inline headers: url|cookie=...&referer=...&user-agent=...
+                        // Also handle the ?| variant: url?|cookie=...
+                        val pipeIdx = trimmed.indexOfFirst { it == '|' }
+                        if (pipeIdx != -1) {
+                            // Remove the pipe and everything after from URL
+                            streamUrl = trimmed.substring(0, pipeIdx).trimEnd('?')
+                            val headerStr = trimmed.substring(pipeIdx + 1)
+                            headerStr.split("&").forEach { kv ->
+                                val eqIdx = kv.indexOf("=")
+                                if (eqIdx != -1) {
+                                    val k = kv.substring(0, eqIdx).trim().lowercase()
+                                    val v = kv.substring(eqIdx + 1).trim()
+                                    when (k) {
+                                        "cookie" -> if (attrs["cookie"].isNullOrBlank()) attrs["cookie"] = v
+                                        "referer" -> if (attrs["referer"].isNullOrBlank()) attrs["referer"] = v
+                                        "origin" -> if (attrs["origin"].isNullOrBlank()) attrs["origin"] = v
+                                        "user-agent" -> if (attrs["userAgent"].isNullOrBlank()) attrs["userAgent"] = v
+                                    }
+                                }
+                            }
+                        }
                         channels.add(Channel(
                             name = attrs["tvg-name"]?.takeIf { it.isNotBlank() } ?: attrs["name"] ?: "Unknown",
-                            url = trimmed,
+                            url = streamUrl,
                             logo = attrs["tvg-logo"] ?: "",
                             group = attrs["group-title"]?.takeIf { it.isNotBlank() } ?: defaultGroup,
                             tvgId = attrs["tvg-id"] ?: "",
