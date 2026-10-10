@@ -18,9 +18,9 @@ object DefaultPlaylists {
         DefaultPlaylist("SONYLIV", R.drawable.logo_sonyliv, "https://raw.githubusercontent.com/drmlive/sliv-live-events/refs/heads/main/sonyliv.m3u"),
         DefaultPlaylist("WILLOW", R.drawable.logo_willow, "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.m3u"),
         DefaultPlaylist("PRIMEVIDEO", R.drawable.logo_primevideo, "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.m3u"),
-        DefaultPlaylist("JIO-TV", R.drawable.logo_jiotv, "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/refs/heads/main/jtvplus7.m3u"),
-        DefaultPlaylist("ZEE5", R.drawable.logo_zee5, "https://sportlink-fifa-live.pages.dev/zee5.json", PlaylistFormat.JSON_ZEE5),
-        DefaultPlaylist("SONY", R.drawable.logo_sony, "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/refs/heads/main/sony.m3u"),
-        DefaultPlaylist("SUN", R.drawable.logo_sun, "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/refs/heads/main/sun.m3u")
+        DefaultPlaylist("JIO-TV", R.drawable.logo_jiotv, "https://sportlink-playlist.pages.dev/zio.m3u"),
+        DefaultPlaylist("ZEE5", R.drawable.logo_zee5, "https://vk-playlist.pages.dev/zee3.m3u"),
+        DefaultPlaylist("SONY", R.drawable.logo_sony, "https://vk-playlist.pages.dev/sony.m3u"),
+        DefaultPlaylist("SUN", R.drawable.logo_sun, "https://vk-playlist.pages.dev/sun.m3u")
     )
 }
