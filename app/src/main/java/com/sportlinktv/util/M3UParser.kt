@@ -41,29 +41,62 @@ object M3UParser {
                 }
                 trimmed.startsWith("#KODIPROP:inputstream.adaptive.stream_headers=") -> {
                     val headers = trimmed.substringAfter("=")
-                    val cookieMatch = Regex("Cookie=([^;]+)").find(headers)
-                    if (cookieMatch != null) {
-                        current?.put("cookie", cookieMatch.groupValues[1].trim())
+                    headers.split(Regex("[&;]")).forEach { kv ->
+                        val eqIdx = kv.indexOf("=")
+                        if (eqIdx != -1) {
+                            val k = kv.substring(0, eqIdx).trim().lowercase()
+                            val v = kv.substring(eqIdx + 1).trim()
+                            when (k) {
+                                "user-agent" -> current?.put("userAgent", v)
+                                "referer", "referrer" -> current?.put("referer", v)
+                                "origin" -> current?.put("origin", v)
+                                "cookie" -> current?.put("cookie", v)
+                            }
+                        }
                     }
                     val hdneaMatch = Regex("__hdnea__=[^;&]+").find(headers)
                     if (hdneaMatch != null && current?.get("cookie") == null) {
                         current?.put("cookie", "__hdnea__=" + hdneaMatch.value.replace("__hdnea__=", ""))
                     }
-                    val uaMatch = Regex("User-Agent=([^;]+)").find(headers)
-                    if (uaMatch != null) {
-                        current?.put("userAgent", uaMatch.groupValues[1].trim())
-                    }
                 }
-                trimmed.startsWith("#EXTVLCOPT:http-user-agent=") -> {
+                trimmed.startsWith("#EXTVLCOPT:http-user-agent=", ignoreCase = true) -> {
                     current?.put("userAgent", trimmed.substringAfter("=").trim())
+                }
+                trimmed.startsWith("#EXTVLCOPT:http-referrer=", ignoreCase = true) || trimmed.startsWith("#EXTVLCOPT:http-referer=", ignoreCase = true) -> {
+                    current?.put("referer", trimmed.substringAfter("=").trim())
+                }
+                trimmed.startsWith("#EXTVLCOPT:http-cookie=", ignoreCase = true) -> {
+                    current?.put("cookie", trimmed.substringAfter("=").trim())
+                }
+                trimmed.startsWith("#EXTVLCOPT:http-extra-headers=", ignoreCase = true) -> {
+                    val extra = trimmed.substringAfter("=").trim()
+                    val colonIdx = extra.indexOf(":")
+                    if (colonIdx != -1) {
+                        val headerName = extra.substring(0, colonIdx).trim().lowercase()
+                        val headerVal = extra.substring(colonIdx + 1).trim()
+                        when (headerName) {
+                            "origin" -> current?.put("origin", headerVal)
+                            "referer", "referrer" -> current?.put("referer", headerVal)
+                            "cookie" -> current?.put("cookie", headerVal)
+                            "user-agent" -> current?.put("userAgent", headerVal)
+                        }
+                    }
                 }
                 trimmed.startsWith("#EXTHTTP:") -> {
                     try {
                         val jsonStr = trimmed.substringAfter(":")
                         val jsonObj = org.json.JSONObject(jsonStr)
-                        if (jsonObj.has("cookie")) current?.put("cookie", jsonObj.optString("cookie"))
-                        if (jsonObj.has("Origin")) current?.put("origin", jsonObj.optString("Origin"))
-                        if (jsonObj.has("Referer")) current?.put("referer", jsonObj.optString("Referer"))
+                        val keys = jsonObj.keys()
+                        while (keys.hasNext()) {
+                            val k = keys.next()
+                            val v = jsonObj.optString(k)
+                            when (k.lowercase()) {
+                                "cookie" -> current?.put("cookie", v)
+                                "origin" -> current?.put("origin", v)
+                                "referer", "referrer" -> current?.put("referer", v)
+                                "user-agent" -> current?.put("userAgent", v)
+                            }
+                        }
                     } catch(e: Exception) {
                         e.printStackTrace()
                     }

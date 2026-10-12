@@ -61,8 +61,8 @@ class PlayerManager @Inject constructor(
 
         // Determine stream format
         val hasDrmKeys = !channel.drmKeyId.isNullOrEmpty() && !channel.drmKey.isNullOrEmpty()
-        val isDash = channel.url.contains(".mpd", ignoreCase = true) || hasDrmKeys
-        val isHls  = !isDash && channel.url.contains(".m3u8", ignoreCase = true)
+        val isHls  = channel.url.contains(".m3u8", ignoreCase = true)
+        val isDash = !isHls && (channel.url.contains(".mpd", ignoreCase = true) || hasDrmKeys)
 
         when {
             isDash -> itemBuilder.setMimeType(MimeTypes.APPLICATION_MPD)
@@ -84,6 +84,10 @@ class PlayerManager @Inject constructor(
         if (channel.url.contains("jiotv", ignoreCase = true) && !headers.containsKey("Referer")) {
             headers["Referer"] = "https://www.jiotv.com/"
             headers["Origin"]  = "https://www.jiotv.com"
+        }
+        if (channel.url.contains("hotstar", ignoreCase = true) && !headers.containsKey("Referer")) {
+            headers["Referer"] = "https://www.hotstar.com/"
+            headers["Origin"]  = "https://www.hotstar.com"
         }
 
         val dsFactory = DefaultHttpDataSource.Factory()
