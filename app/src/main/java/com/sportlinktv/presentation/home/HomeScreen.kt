@@ -28,12 +28,86 @@ import coil.compose.AsyncImage
 import com.sportlinktv.R
 import com.sportlinktv.data.local.entity.Channel
 
+import androidx.compose.ui.platform.LocalContext
+import com.sportlinktv.BuildConfig
+import com.sportlinktv.util.UpdateInfo
+import com.sportlinktv.util.UpdateManager
+import kotlinx.coroutines.launch
+
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onNavigateToPlayer: (Channel) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
+    var isDownloading by remember { mutableStateOf(false) }
+    var downloadProgress by remember { mutableStateOf(0f) }
+
+    LaunchedEffect(Unit) {
+        val info = UpdateManager.checkForUpdate(BuildConfig.VERSION_CODE)
+        if (info != null) {
+            updateInfo = info
+        }
+    }
+
+    if (updateInfo != null) {
+        AlertDialog(
+            onDismissRequest = { if (!isDownloading) updateInfo = null },
+            title = { Text("Update Available (v${updateInfo?.versionName})") },
+            text = {
+                Column {
+                    Text(updateInfo?.changelog ?: "A new version of Sportlink Tv is available.")
+                    if (isDownloading) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        LinearProgressIndicator(
+                            progress = { downloadProgress },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Downloading: ${(downloadProgress * 100).toInt()}%",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (!isDownloading && updateInfo != null) {
+                            isDownloading = true
+                            coroutineScope.launch {
+                                val success = UpdateManager.downloadAndInstallApk(
+                                    context = context,
+                                    apkUrl = updateInfo!!.apkUrl,
+                                    onProgress = { downloadProgress = it }
+                                )
+                                isDownloading = false
+                                if (!success) {
+                                    updateInfo = null
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isDownloading
+                ) {
+                    Text(if (isDownloading) "Downloading..." else "Update Now")
+                }
+            },
+            dismissButton = {
+                if (!isDownloading) {
+                    TextButton(onClick = { updateInfo = null }) {
+                        Text("Later")
+                    }
+                }
+            }
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         // ── Header with logo ──────────────────────────────────
@@ -50,6 +124,12 @@ fun HomeScreen(
                 text = "Sportlink Tv",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                text = "v${BuildConfig.VERSION_NAME}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 

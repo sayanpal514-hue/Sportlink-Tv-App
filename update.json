@@ -1,0 +1,6 @@
+{
+  "versionCode": 2,
+  "versionName": "1.0.0.1",
+  "apkUrl": "https://raw.githubusercontent.com/sayanpal514-hue/Sportlink-Tv-App/main/app/build/outputs/apk/debug/app-debug.apk",
+  "changelog": "• Added JioHotstar playlist & official logo\n• Removed duplicate JioTV+\n• Added in-app auto-update notifications"
+}
