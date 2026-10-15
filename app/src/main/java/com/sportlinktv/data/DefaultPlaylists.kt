@@ -23,6 +23,6 @@ object DefaultPlaylists {
         DefaultPlaylist("SONY", R.drawable.logo_sony, "https://vk-playlist.pages.dev/sony.m3u"),
         DefaultPlaylist("SUN", R.drawable.logo_sun, "https://vk-playlist.pages.dev/sun.m3u"),
         DefaultPlaylist("JIO TV+", R.drawable.logo_jiotv, "https://premiumplugx.top/jiostb/mjelo.php?view=raw"),
-        DefaultPlaylist("Hotstar", R.drawable.logo_willow, "https://sportlink-playlist.pages.dev/tstar.m3u")
+        DefaultPlaylist("Hotstar", R.drawable.logo_hotstar, "https://sportlink-playlist.pages.dev/tstar.m3u")
     )
 }
